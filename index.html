@@ -158,6 +158,36 @@ dialog::backdrop{background:var(--overlay)}
 .foot{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:0 28px 32px; color:var(--muted); font-size:13px}
 .foot .btn{font-size:13px; padding:6px 12px}
 @media (max-width:640px){ .foot{padding:0 16px 28px} }
+
+/* roster sidebar */
+.layout{display:grid; grid-template-columns:232px minmax(0,1fr); align-items:start}
+.layout .sizer{margin:0 28px 0 12px}
+.roster{position:sticky; top:calc(env(safe-area-inset-top,0px) + 12px); padding:0 0 24px 28px}
+.roster-h{margin:0 0 10px; font-family:"Unbounded","Arial Black",system-ui,sans-serif; font-size:16px; font-weight:700}
+.roster-list{display:flex; flex-direction:column; gap:4px}
+.pl{display:flex; flex-direction:column; align-items:flex-start; gap:1px; width:100%; text-align:left; border:1px solid transparent; border-left:3px solid var(--k,var(--line)); background:transparent; border-radius:8px; padding:7px 10px 8px 11px; cursor:pointer}
+.pl:hover{background:var(--panel)}
+.pl:focus-visible{outline:2px solid var(--ct); outline-offset:2px}
+.pl[aria-pressed="true"]{background:var(--panel); border-color:var(--ink); border-left-color:var(--k,var(--ink))}
+.pl-n{font-weight:800; font-size:15px; line-height:1.25}
+.pl-s{font-size:12px; color:var(--muted); font-weight:600}
+.pl.k-ub{--k:var(--ct)} .pl.k-lb{--k:var(--t)} .pl.k-out{--k:var(--line)} .pl.k-out .pl-n{color:var(--muted)} .pl.k-champ{--k:var(--ink)}
+.roster-hint{font-size:12.5px; color:var(--muted); margin:12px 0 0}
+.canvas.has-sel .m{opacity:.32; transition:opacity .2s}
+.canvas.has-sel .m.sel{opacity:1; box-shadow:0 0 0 2px var(--acc),0 0 0 7px var(--soft)}
+.canvas.has-sel .edge{opacity:.3}
+.row.mine{background:var(--soft)}
+.row.mine .nm{color:var(--ink); font-weight:800}
+#music-btn[aria-pressed="true"]{border-color:var(--ct); color:var(--ct)}
+@media (max-width:820px){
+  .layout{grid-template-columns:1fr}
+  .roster{position:static; padding:0 16px 12px}
+  .roster-list{flex-direction:row; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch}
+  .pl{width:auto; flex:none; border:1px solid var(--line); border-left:3px solid var(--k,var(--line))}
+  .layout .sizer{margin:0 16px}
+  .roster-hint{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){ .canvas.has-sel .m{transition:none} }
 </style>
 </head>
 <body>
@@ -216,7 +246,7 @@ var LABELS=[
 ];
 
 /* ---------- state ---------- */
-var state=null, gistId=null, ownerLogin=null, token=null, editable=false, zoom=1, fresh=null, busy=false;
+var selP=null, state=null, gistId=null, ownerLogin=null, token=null, editable=false, zoom=1, fresh=null, busy=false;
 try{ gistId=new URLSearchParams(location.search).get('id'); }catch(e){}
 if(gistId && !/^[0-9a-f]{20,40}$/i.test(gistId)) gistId=null;
 try{ token=localStorage.getItem(TOKEN_KEY); }catch(e){}
@@ -264,8 +294,10 @@ root.innerHTML=
  '<header class="hero"><div class="hero-top"><div><h1 id="title"></h1><div class="sides" aria-hidden="true"><i></i><i></i></div><p class="meta" id="meta"></p></div><div id="champ"></div></div></header>'+
  '<div class="bar"><div class="legend"><span><i style="background:var(--ct)"></i>Верхня сітка</span><span><i style="background:var(--t)"></i>Нижня сітка</span></div>'+
  '<span class="hint" id="hint"></span><span class="spacer"></span><span id="tools"></span>'+
+ '<button type="button" class="btn" id="music-btn" hidden></button>'+
  '<div class="zoom" role="group" aria-label="Масштаб"><button type="button" id="zout" aria-label="Зменшити">−</button><output id="zval">100%</output><button type="button" id="zin" aria-label="Збільшити">+</button><button type="button" id="zfit">Уся сітка</button></div></div>'+
- '<div class="stage" id="stage"><div class="sizer" id="sizer"><div class="canvas" id="canvas"></div></div></div>'+
+ '<div class="layout"><aside class="roster" aria-labelledby="roster-h"><h2 class="roster-h" id="roster-h">Учасники</h2><div class="roster-list" id="roster"></div><p class="roster-hint" id="roster-hint">Оберіть гравця, щоб підсвітити його матчі.</p></aside>'+
+ '<div class="stage" id="stage"><div class="sizer" id="sizer"><div class="canvas" id="canvas"></div></div></div></div>'+
  '<footer class="foot"><button type="button" class="btn" id="copy-link">Скопіювати посилання</button><span class="spacer"></span><span id="who"></span><button type="button" class="btn ghost" id="auth-btn"></button></footer>'+
  '</div>'+
  '<dialog id="dm" aria-labelledby="dm-h"><div class="dlg"><h2 id="dm-h"></h2><p class="sub" id="dm-sub"></p>'+
@@ -279,6 +311,7 @@ root.innerHTML=
  '<dialog id="dl" aria-labelledby="dl-h"><div class="dlg"><h2 id="dl-h">Вхід для організатора</h2><p class="sub">Вставте токен GitHub того акаунта, який створив цю сітку. Токен зберігається лише в цьому браузері.</p>'+
  '<label class="field" style="margin-bottom:14px"><span>Токен GitHub</span><input id="dl-token" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_…"></label>'+
  '<p class="err" id="dl-err" hidden></p><div class="actions"><button type="button" class="btn" id="dl-cancel">Скасувати</button><button type="button" class="btn primary" id="dl-ok">Увійти</button></div></div></dialog>'+
+ '<audio id="music" src="music.mp3" loop preload="auto"></audio>'+
  '<div class="toast" id="toast" role="status" hidden></div><div class="saving" id="saving" hidden><div>Зберігаю…</div></div>';
 
 function $(id){return document.getElementById(id);}
@@ -309,7 +342,7 @@ function render(){
 
   $('hint').textContent=editable
     ? 'Натисніть на матч, щоб вказати переможця і рахунок.'
-    : 'Наведіть на ім’я, щоб підсвітити шлях гравця.';
+    : 'Оберіть гравця в списку учасників або в сітці, щоб підсвітити його матчі.';
   $('tools').innerHTML=editable ? '<span class="mode">Ви редагуєте</span> <button type="button" class="btn" id="open-players" style="margin-left:10px">Учасники</button>' : '';
   if(editable) $('open-players').onclick=openPlayers;
   $('auth-btn').textContent=editable?'Вийти':'Я організатор';
@@ -345,16 +378,62 @@ function render(){
           if(r.s && r.s[side]!=null) sc=esc(r.s[side]);
         }
       }
+      if(p!=null && selP!=null && String(p)===selP) cls+=' mine';
       rows+='<div class="'+cls+'"'+dp+tip+'><span class="nm">'+name+'</span><span class="sc">'+sc+'</span></div>';
     });
+    var mine=selP!=null&&(String(pp[0])===selP||String(pp[1])===selP);
     var attrs=editable?' tabindex="0" role="button" aria-label="'+esc(m.code+', змінити результат')+'"':'';
-    html+='<div class="m '+m.sect+(editable?' edit':'')+(fresh===m.id?' fresh':'')+'" data-id="'+m.id+'" style="left:'+X(m.c)+'px;top:'+m.y+'px"'+attrs+'>'+
+    html+='<div class="m '+m.sect+(editable?' edit':'')+(fresh===m.id?' fresh':'')+(mine?' sel':'')+'" data-id="'+m.id+'" style="left:'+X(m.c)+'px;top:'+m.y+'px"'+attrs+'>'+
       '<div class="mh"><span>'+esc(m.code)+'</span><span class="st">'+st+'</span></div>'+rows+'</div>';
   });
-  $('canvas').innerHTML=html;
+  var cv=$('canvas'); cv.innerHTML=html; cv.classList.toggle('has-sel',selP!=null);
   hlP=null; fresh=null;
+  renderRoster(R);
   applyZoom();
 }
+
+/* ---------- roster ---------- */
+function playerInfo(R,i){
+  var w=0,l=0,status='Верхня сітка',kind='ub';
+  MATCHES.forEach(function(m){
+    var r=R[m.id]; if(!r) return;
+    var ids=[r.pa,r.pb], side=ids.indexOf(i); if(side<0) return;
+    if(r.w===side) w++; else{
+      l++;
+      if(m.sect==='ub'){ status='Нижня сітка'; kind='lb'; }
+      else if(m.id==='GF'){ status='2 місце'; kind='out'; }
+      else if(m.id==='LBF'){ status='3 місце'; kind='out'; }
+      else { status='Вибув'; kind='out'; }
+    }
+    if(m.id==='GF' && r.w===side){ status='Чемпіон'; kind='champ'; }
+  });
+  return {w:w,l:l,status:status,kind:kind};
+}
+function renderRoster(R){
+  var pl=state.players, order=pl.map(function(_,i){return i;});
+  var h='';
+  order.forEach(function(i){
+    var inf=playerInfo(R,i), on=selP===String(i);
+    h+='<button type="button" class="pl k-'+inf.kind+'" data-p="'+i+'" aria-pressed="'+on+'">'+
+      '<span class="pl-n">'+(inf.kind==='champ'?'🏆 ':'')+esc(pl[i])+'</span>'+
+      '<span class="pl-s">'+esc(inf.status)+', '+inf.w+'–'+inf.l+'</span></button>';
+  });
+  $('roster').innerHTML=h;
+  $('roster-hint').textContent=selP!=null?'Натисніть ще раз або Esc, щоб зняти виділення.':'Оберіть гравця, щоб підсвітити його матчі.';
+}
+function selectPlayer(p,scroll){
+  selP=(p==null||selP===p)?null:p;
+  render();
+  if(scroll && selP!=null){
+    var boxes=$('canvas').querySelectorAll('.m.sel');
+    var last=boxes[boxes.length-1]||boxes[0];
+    var sr=$('stage').getBoundingClientRect(), lr=last&&last.getBoundingClientRect();
+    var visible=lr && lr.left>=sr.left && lr.right<=sr.right && lr.top>=0 && lr.bottom<=window.innerHeight;
+    if(last && !visible && last.scrollIntoView){ try{ last.scrollIntoView({block:'nearest',inline:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }catch(e){} }
+  }
+}
+$('roster').addEventListener('click',function(e){ var b=e.target.closest('.pl'); if(b) selectPlayer(b.getAttribute('data-p'),true); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape' && selP!=null && !document.querySelector('dialog[open]')) selectPlayer(null); });
 
 /* ---------- zoom ---------- */
 function applyZoom(){
@@ -389,7 +468,7 @@ $('canvas').addEventListener('click',function(e){
   var box=e.target.closest('.m');
   if(editable && box){ openMatch(box.getAttribute('data-id')); return; }
   var r=e.target.closest('.row[data-p]');
-  highlight(r ? (hlP===r.getAttribute('data-p')?null:r.getAttribute('data-p')) : null);
+  if(r) selectPlayer(r.getAttribute('data-p'),false);
 });
 $('canvas').addEventListener('keydown',function(e){
   if(!editable) return;
@@ -620,6 +699,34 @@ function startPolling(){
   },POLL_MS);
   document.addEventListener('visibilitychange',function(){ if(!document.hidden && !busy) load(); });
 }
+
+/* ---------- background music ---------- */
+var MUSIC_KEY='cs2-music-off', VOLUME=0.15;
+var audio=$('music'), musicBtn=$('music-btn'), musicOff=false, musicOk=true;
+try{ musicOff=localStorage.getItem(MUSIC_KEY)==='1'; }catch(e){}
+audio.volume=VOLUME;
+function musicLabel(){ musicBtn.textContent=audio.paused?'♪ Увімкнути музику':'♪ Вимкнути музику'; musicBtn.setAttribute('aria-pressed',String(!audio.paused)); }
+function tryPlay(){
+  if(musicOff||!musicOk) return Promise.resolve(false);
+  audio.volume=VOLUME;
+  var pr=audio.play();
+  return (pr&&pr.then?pr:Promise.resolve()).then(function(){ musicLabel(); return true; },function(){ musicLabel(); return false; });
+}
+audio.addEventListener('error',function(){ musicOk=false; musicBtn.hidden=true; });
+audio.addEventListener('canplay',function(){ if(musicOk) musicBtn.hidden=false; musicLabel(); },{once:true});
+audio.addEventListener('play',musicLabel); audio.addEventListener('pause',musicLabel);
+musicBtn.onclick=function(){
+  if(audio.paused){ musicOff=false; try{localStorage.removeItem(MUSIC_KEY);}catch(e){} tryPlay(); }
+  else{ musicOff=true; try{localStorage.setItem(MUSIC_KEY,'1');}catch(e){} audio.pause(); }
+};
+// browsers allow sound only after the first tap or key press
+function firstGesture(e){
+  if(e && e.target && e.target.closest && e.target.closest('#music-btn')) return;
+  tryPlay().then(function(ok){ if(ok||musicOff){ document.removeEventListener('pointerdown',firstGesture,true); document.removeEventListener('keydown',firstGesture,true); } });
+}
+document.addEventListener('pointerdown',firstGesture,true);
+document.addEventListener('keydown',firstGesture,true);
+tryPlay();
 
 /* ---------- boot ---------- */
 if(!gistId){ showSetup(); }
