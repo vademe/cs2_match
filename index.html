@@ -155,7 +155,7 @@ dialog::backdrop{background:var(--overlay)}
 .gate ol{margin:0 0 16px; padding-left:20px; color:var(--muted)} .gate li{margin-bottom:6px}
 .gate a,.foot a{color:var(--ct); font-weight:700}
 .gate .field{margin-bottom:12px}
-.foot{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:0 28px 32px; color:var(--muted); font-size:13px}
+.foot{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:0 120px 32px 28px; color:var(--muted); font-size:13px}
 .foot .btn{font-size:13px; padding:6px 12px}
 @media (max-width:640px){ .foot{padding:0 16px 28px} }
 
@@ -303,8 +303,20 @@ dialog.vdlg{width:min(1040px,calc(100vw - 24px)); max-height:calc(100dvh - 24px)
 .turn.ct{--c:var(--ct)} .turn.t{--c:var(--t)}
 .turn strong{display:block; font-size:17px}
 .turn span{color:var(--muted); font-weight:600}
-.turn.ban span{color:#D9534F}
-.turn em{margin-left:auto; font-style:normal; font-size:12.5px; color:var(--muted)}
+.turn-step{margin-left:auto; text-align:right; font-size:13px; font-weight:800; color:var(--muted)}
+.turn-step em{font-style:normal; font-weight:600; font-size:12px}
+.turn.ban span:not(.turn-step){color:#D9534F}
+.vsteps{list-style:none; display:flex; flex-wrap:wrap; gap:6px; padding:0; margin:0 0 14px}
+.vsteps li{display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 4px; border-radius:999px; border:1px solid var(--line); background:var(--panel); font-size:12.5px; font-weight:700; color:var(--muted)}
+.vsteps li b{width:20px; height:20px; border-radius:50%; display:grid; place-items:center; background:var(--panel2); font-size:11px; color:var(--ink)}
+.vsteps li.dec{padding-left:4px}
+.vst-i{width:18px; height:18px}
+.vsteps li.done{color:var(--ink)}
+.vsteps li.done.ban span{text-decoration:line-through; text-decoration-color:#D9534F}
+.vsteps li.done.pick{border-color:var(--c)}
+.vsteps li.ct{--c:var(--ct)} .vsteps li.t{--c:var(--t)} .vsteps li.dec{--c:var(--ink)}
+.vsteps li.now{border-color:var(--c); box-shadow:0 0 0 2px var(--c); color:var(--ink)}
+.vsteps li.dec.done{border-color:var(--ink)}
 .turn .btn{margin-left:auto}
 .turn-i{width:40px; height:40px}
 
@@ -347,6 +359,45 @@ dialog.vdlg{width:min(1040px,calc(100vw - 24px)); max-height:calc(100dvh - 24px)
   .vhead h2{font-size:18px}
 }
 @media (prefers-reduced-motion:reduce){ .mapc,.mapc-i,.rc.won{transition:none} .slot-i,.roll-win{animation:none} }
+
+/* ---------- case opening ---------- */
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.case-fab{position:fixed; right:calc(20px + env(safe-area-inset-right,0px)); bottom:calc(20px + env(safe-area-inset-bottom,0px)); z-index:30; width:78px; height:78px; border-radius:50%;
+  border:2px solid #E4AE39; background:radial-gradient(circle at 50% 40%,#3A3220,#14110A); cursor:pointer; display:grid; place-items:center; padding:12px;
+  box-shadow:0 0 0 0 rgba(228,174,57,.6),0 6px 22px rgba(0,0,0,.35); animation:caseGlow 2.2s ease-in-out infinite}
+.case-fab svg{width:100%; height:auto; transition:transform .2s}
+.case-fab:hover svg{transform:scale(1.1) rotate(-4deg)}
+.case-fab:focus-visible{outline:3px solid var(--ct); outline-offset:3px}
+@keyframes caseGlow{0%,100%{box-shadow:0 0 10px 2px rgba(228,174,57,.45),0 6px 22px rgba(0,0,0,.35)}50%{box-shadow:0 0 30px 10px rgba(228,174,57,.7),0 6px 22px rgba(0,0,0,.35)}}
+.case-hero{display:flex; flex-wrap:wrap; align-items:center; gap:18px 30px; margin-bottom:20px}
+.case-big{width:min(240px,60vw); filter:drop-shadow(0 0 26px rgba(228,174,57,.45))}
+.case-big svg{width:100%; height:auto; display:block}
+.case-info{flex:1; min-width:240px}
+.case-info p{margin:0 0 14px; color:var(--muted)}
+.btn.case-go{font-size:17px; padding:12px 26px; background:#E4AE39; border-color:#E4AE39; color:#1B1405}
+.case-count{font-size:13px; margin-top:10px !important}
+.case-h{margin:0 0 10px; font-size:15px}
+.case-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:8px}
+.ci{--r:#4B69FF; flex:none; width:156px; height:156px; border-radius:12px; background:linear-gradient(180deg,var(--panel) 55%,color-mix(in srgb,var(--r) 22%,var(--panel))); border:1px solid var(--line); border-bottom:4px solid var(--r);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:8px; text-align:center}
+.ci.t-blue{--r:#4B69FF} .ci.t-purple{--r:#8847FF} .ci.t-pink{--r:#D32CE6} .ci.t-red{--r:#EB4B4B} .ci.t-gold{--r:#E4AE39}
+.ci-e{font-size:54px; line-height:1}
+.ci.t-gold .ci-e{color:#E4AE39; font-weight:900; text-shadow:0 0 18px rgba(228,174,57,.8)}
+.ci-n{font-size:12.5px; font-weight:700; line-height:1.25; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
+.ci.small{width:auto; height:auto; min-height:104px; gap:6px}
+.ci.small .ci-e{font-size:30px}
+.ci.small .ci-n{font-size:11.5px}
+.case-win .ci.win{transition:box-shadow .3s}
+.case-res{min-height:120px; display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:20px}
+.drop{--r:#4B69FF; display:flex; align-items:center; gap:18px; padding:14px 22px; border-radius:14px; border:2px solid var(--r); background:color-mix(in srgb,var(--r) 14%,var(--panel)); box-shadow:0 0 30px color-mix(in srgb,var(--r) 45%,transparent); animation:pop .45s ease-out; max-width:100%}
+.drop.t-blue{--r:#4B69FF} .drop.t-purple{--r:#8847FF} .drop.t-pink{--r:#D32CE6} .drop.t-red{--r:#EB4B4B} .drop.t-gold{--r:#E4AE39}
+.drop-e{font-size:64px; line-height:1}
+.drop small{display:block; font-weight:800; color:var(--r); font-size:13px}
+.drop strong{display:block; font-family:"Unbounded","Arial Black",system-ui,sans-serif; font-size:20px; line-height:1.2}
+.drop-act{display:flex; flex-wrap:wrap; justify-content:center; gap:8px}
+.btn.gold-btn{background:#E4AE39; border-color:#E4AE39; color:#1B1405; text-decoration:none; animation:caseGlow 1.6s ease-in-out infinite}
+@media (max-width:640px){ .case-fab{width:64px; height:64px; padding:10px} .drop{flex-direction:column; text-align:center} .drop strong{font-size:17px} }
+@media (prefers-reduced-motion:reduce){ .case-fab,.gold-btn{animation:none} .drop{animation:none} }
 </style>
 </head>
 <body>
@@ -465,6 +516,7 @@ root.innerHTML=
  '<div class="stage" id="stage"><div class="sizer" id="sizer"><div class="canvas" id="canvas"></div></div></div></div>'+
  '<section class="summary" aria-labelledby="sum-h"><h2 id="sum-h">Підсумок</h2><p class="sub">Набрані бали рахуються з усіх матчів, де вказано рахунок.</p><div class="tbl-wrap" id="sum"></div></section>'+
  '<footer class="foot"><button type="button" class="btn" id="copy-link">Скопіювати посилання</button><span class="spacer"></span><span id="who"></span><button type="button" class="btn ghost" id="auth-btn"></button></footer>'+
+ '<button type="button" class="case-fab" id="case-fab" title="Відкрити кейс"></button>'+
  '</div>'+
  '<dialog id="dm" aria-labelledby="dm-h"><div class="dlg"><h2 id="dm-h"></h2><p class="sub" id="dm-sub"></p><div class="vblock" id="dm-veto" hidden></div>'+
  '<span class="lbl">Хто переміг?</span><div class="picks"><button type="button" class="pick" id="pk0" aria-pressed="false"></button><button type="button" class="pick" id="pk1" aria-pressed="false"></button></div>'+
@@ -478,6 +530,7 @@ root.innerHTML=
  '<label class="field" style="margin-bottom:14px"><span>Токен GitHub</span><input id="dl-token" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_…"></label>'+
  '<p class="err" id="dl-err" hidden></p><div class="actions"><button type="button" class="btn" id="dl-cancel">Скасувати</button><button type="button" class="btn primary" id="dl-ok">Увійти</button></div></div></dialog>'+
  '<dialog id="dv" class="vdlg" aria-labelledby="dv-h"><div class="vwrap"><header class="vhead"><div><h2 id="dv-h">Вибір карт</h2><p class="vsub" id="dv-sub"></p></div><button type="button" class="vx" id="dv-close" aria-label="Закрити">✕</button></header><div id="dv-body"></div></div></dialog>'+
+ '<dialog id="dc" class="vdlg cdlg" aria-labelledby="dc-h"><div class="vwrap"><header class="vhead"><div><h2 id="dc-h">Турнірний кейс</h2><p class="vsub" style="font-weight:600;color:var(--muted)">Чисто для розваги: призи не справжні.</p></div><button type="button" class="vx" id="dc-close" aria-label="Закрити">✕</button></header><div id="dc-body"></div></div></dialog>'+
  '<audio id="music" src="music.mp3" loop preload="auto"></audio>'+
  '<div class="splash" id="splash" hidden><div class="splash-card" role="dialog" aria-modal="true" aria-labelledby="splash-h"><h2 id="splash-h">Турнірна сітка CS2</h2><p>Сторінка грає музику. Браузер дозволяє звук лише після вашого натискання.</p><button type="button" class="btn primary" id="splash-go">▶ Відкрити з музикою</button><br><button type="button" class="quiet" id="splash-quiet">Відкрити без музики</button></div></div>'+
  '<div class="toast" id="toast" role="status" hidden></div><div class="saving" id="saving" hidden><div>Зберігаю…</div></div>';
@@ -913,7 +966,12 @@ var SIDE=['ct','t'];
 var reduceMotion=false; try{ reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
 
 function rnd(n){ try{ var a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%n; }catch(e){ return Math.floor(Math.random()*n); } }
-function seqFor(v){ var F=v.first,S=1-F; return [{p:F,a:'ban'},{p:F,a:'ban'},{p:F,a:'pick',slot:0},{p:S,a:'ban'},{p:S,a:'ban'},{p:S,a:'pick',slot:1}]; }
+function seqFor(v){
+  var F=v.first,S=1-F;
+  // fmt 2: A ban, B ban, A pick (map 1), B pick (map 2), B ban, A ban, decider
+  if(v.fmt===2) return [{p:F,a:'ban'},{p:S,a:'ban'},{p:F,a:'pick',slot:0},{p:S,a:'pick',slot:1},{p:S,a:'ban'},{p:F,a:'ban'}];
+  return [{p:F,a:'ban'},{p:F,a:'ban'},{p:F,a:'pick',slot:0},{p:S,a:'ban'},{p:S,a:'ban'},{p:S,a:'pick',slot:1}];
+}
 function vetoValid(v,pp){ return !!(v && pp && v.pa===pp[0] && v.pb===pp[1] && (v.first===0||v.first===1)); }
 function vetoOf(id){ var v=state.vetos&&state.vetos[id]; return vetoValid(v,compute(state).P[id])?v:null; }
 function vetoStage(v){ if(!v||v.first==null) return 'roll'; if((v.steps||[]).length<6) return 'veto'; if(!v.decider) return 'decider'; return 'done'; }
@@ -975,7 +1033,7 @@ function spinRoulette(){
   $('dv-body').innerHTML='<div class="roll"><p class="roll-t">Хто першим банить і обирає карту?</p>'+
     '<div class="rl-win" id="rl-win"><div class="rl-strip" id="rl-strip">'+cards+'</div><div class="rl-mark" aria-hidden="true"></div></div>'+
     '<div class="roll-res" id="roll-res" aria-live="polite"></div></div>';
-  var nv={pa:vCur.pp[0],pb:vCur.pp[1],first:winner,steps:[],decider:null,at:Date.now()};
+  var nv={pa:vCur.pp[0],pb:vCur.pp[1],first:winner,steps:[],decider:null,fmt:2,at:Date.now()};
   var saved=saveSilent(withVeto(vCur.id,nv));
   var strip=$('rl-strip'), win=$('rl-win');
   var STEP=166, CARD=156;
@@ -1023,14 +1081,22 @@ function renderVeto(){
       '<div class="slot-by">'+(i===2?'Випадковий вибір':'Обирає '+esc(n[by]))+'</div></div>';
   });
   h+='</div>';
+  // 7-step timeline
+  h+='<ol class="vsteps">';
+  seq.forEach(function(q,i){
+    var state_=i<k?' done':(i===k&&stage==='veto'?' now':'');
+    var mapTxt=i<k?MAPBY[v.steps[i].m].name:'';
+    h+='<li class="'+SIDE[q.p]+' '+q.a+state_+'"><b>'+(i+1)+'</b>'+iconImg(SIDE[q.p],'vst-i','')+'<span>'+(q.a==='ban'?'Бан ':'Пік ')+esc(n[q.p])+(mapTxt?': '+esc(mapTxt):'')+'</span></li>';
+  });
+  h+='<li class="dec'+(v.decider?' done':(stage==='decider'?' now':''))+'"><b>7</b><span>Десайдер'+(v.decider?': '+esc(MAPBY[v.decider].name):'')+'</span></li></ol>';
   // turn banner
   var turn='', act=null;
   if(stage==='veto'){
     var q=seq[k]; act=q.a;
-    var banNo=q.a==='ban'?(k%3)+1:0;
+    var banNo=seq.slice(0,k).filter(function(x){return x.p===q.p&&x.a==='ban';}).length+1;
     turn='<div class="turn '+SIDE[q.p]+' '+q.a+'">'+iconImg(SIDE[q.p],'turn-i',SIDE[q.p].toUpperCase())+'<div><strong>'+esc(n[q.p])+'</strong><span>'+
-      (q.a==='ban'?'забороняє карту, '+banNo+' з 2':'обирає '+(q.slot===0?'карту 1 (AK-47)':'карту 2 (AWP)'))+'</span></div>'+
-      (editable?'':'<em>Голосування проводить організатор</em>')+'</div>';
+      (q.a==='ban'?'банить карту ('+banNo+'-й бан)':'обирає '+(q.slot===0?'карту 1 серії (AK-47)':'карту 2 серії (AWP)'))+'</span></div>'+
+      '<span class="turn-step">Крок '+(k+1)+' з 7'+(editable?'':'<br><em>Голосування проводить організатор</em>')+'</span></div>';
   } else if(stage==='decider'){
     turn='<div class="turn dec"><div><strong>Десайдер</strong><span>Третя карта (Desert Eagle) обирається випадково з тих, що залишились.</span></div>'+
       (editable?'<button type="button" class="btn primary" id="dec-go">Обрати десайдер</button>':'')+'</div>';
@@ -1138,6 +1204,85 @@ function renderMatchVeto(){
     saveSilent(withVeto(id,null)).then(function(ok){ if(!ok) toast('Не вдалося скинути вибір карт.'); renderMatchVeto(); });
   };
 }
+
+/* ---------- fun: case opening ---------- */
+var RICKROLL='https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+var TIERS=[
+  {k:'gold',  n:'★ Надзвичайно рідкісне', odds:26},
+  {k:'red',   n:'Таємне',                 odds:64},
+  {k:'pink',  n:'Засекречене',            odds:320},
+  {k:'purple',n:'Заборонене',             odds:1598},
+  {k:'blue',  n:'Армійської якості',      odds:7992}
+];
+var ITEMS={
+  gold:[['🔪','★ Золотий керамбіт | Ніколи не здамся']],
+  red:[['🎈','Надувна жінка Галя | Прямо з заводу'],['🐊','Справжній крокодил у коробці від взуття'],['🚜','Трактор МТЗ-82 | Польова зношеність'],['🔫','AK-47 | Вишиванка'],['🏆','Кубок мейджора (підробка з ринку)']],
+  pink:[['🌬️','Компресор автомобільний 12V'],['🦆','AWP | Гумова качечка'],['🔫','M4A4 | Бабусин килим'],['🔫','Desert Eagle | Борщ'],['🍉','Кавун херсонський | Стиглий'],['🪿','Гусак, що кусається'],['🛁','Чавунна ванна з доставкою на 9 поверх'],['📟','Пейджер з одним непрочитаним']],
+  purple:[['🔧','Ключ на 17, якого вічно немає'],['🧯','Вогнегасник | Після тренування'],['🥾','Гумові чоботи | Хакі'],['🪣','Відро без дна'],['🔫','Glock-18 | Сало'],['🧦','Шкарпетка без пари'],['🦷','Зуб мудрості (не ваш)'],['📼','Касета «Хіти 2003»'],['🪑','Табуретка, що хитається'],['🔦','Ліхтарик без батарейок'],['🥒','Огірок маринований | Хрусткий'],['🧸','Плюшевий ведмідь з одним оком'],['🚲','Велосипед «Україна» | Іржавий'],['🎺','Сурма для гучного раш Б'],['🪴','Бабусин фікус'],['🔫','P250 | Паляниця']],
+  blue:[['🥔','Картопля | Мита'],['🧅','Цибуля, від якої плачуть'],['🧽','Губка для посуду | Б/в'],['📎','Звичайна скріпка'],['🪥','Зубна щітка | Сусідська'],['🧻','Останній рулон паперу'],['🔋','Батарейка, що сіла'],['🪫','Повербанк на 3%'],['🧂','Сіль | Йодована'],['🔫','Nova | Кукурудзяна'],['🗝️','Ключ невідомо від чого'],['🧤','Одна рукавичка'],['🪤','Мишоловка | Порожня'],['🍬','Цукерка «Барбарис» з кишені діда'],['🧷','Англійська шпилька'],['🩴','USP-S | Тапок'],['🪒','Одноразова бритва | Тупа'],['🧃','Сік, який хтось уже відкрив'],['🥫','Консерва «Сніданок туриста»'],['🧴','Крем від засмаги в листопаді'],['🪀','Йо-йо | Заплутане'],['🕯️','Свічка на випадок відключень'],['📦','Порожня коробка від кейса'],['🧊','Кубик льоду | Тане'],['🪨','Камінь | Мінімальна зношеність'],['🐟','Тараня до пива'],['🧹','Віник без ручки'],['💡','Лампочка на 40 Вт'],['🎟️','Прострочений квиток на маршрутку'],['🧀','Плавлений сирок «Дружба»']]
+};
+var TIERBY={}; TIERS.forEach(function(t){TIERBY[t.k]=t;});
+var ODDS_TOTAL=TIERS.reduce(function(a,t){return a+t.odds;},0);
+function drawItem(){
+  var r=rnd(ODDS_TOTAL), acc=0, tier=TIERS[TIERS.length-1];
+  for(var i=0;i<TIERS.length;i++){ acc+=TIERS[i].odds; if(r<acc){ tier=TIERS[i]; break; } }
+  var list=ITEMS[tier.k], it=list[rnd(list.length)];
+  return {t:tier.k,e:it[0],n:it[1]};
+}
+var CASE_SVG='<svg viewBox="0 0 120 92" aria-hidden="true"><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4B5A3E"/><stop offset="1" stop-color="#2C3524"/></linearGradient><linearGradient id="cg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE27A"/><stop offset="1" stop-color="#E4A42C"/></linearGradient></defs>'+
+  '<rect x="44" y="4" width="32" height="14" rx="5" fill="none" stroke="#1E2419" stroke-width="5"/>'+
+  '<rect x="6" y="15" width="108" height="72" rx="9" fill="url(#cg1)" stroke="#1E2419" stroke-width="3"/>'+
+  '<rect x="6" y="41" width="108" height="7" fill="#1E2419" opacity=".55"/>'+
+  '<path d="M6 30v-6a9 9 0 0 1 9-9h8v15zM114 30v-6a9 9 0 0 0-9-9h-8v15zM6 72v6a9 9 0 0 0 9 9h8V72zM114 72v6a9 9 0 0 1-9 9h-8V72z" fill="#A9B3BC"/>'+
+  '<circle cx="60" cy="52" r="17" fill="#1E2419"/><circle cx="60" cy="52" r="14" fill="url(#cg2)"/>'+
+  '<path d="M60 42.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L60 57.2l-5.9 3.3 1.3-6.6-4.9-4.5 6.6-.8z" fill="#5A3B05"/></svg>';
+
+var caseCount=0; try{ caseCount=parseInt(localStorage.getItem('cs2-cases')||'0',10)||0; }catch(e){}
+var caseSpinning=false;
+function itemCard(it,hide,cls){
+  var gold=it.t==='gold';
+  return '<div class="ci t-'+it.t+(cls?' '+cls:'')+'"><span class="ci-e">'+(gold&&hide?'★':it.e)+'</span><span class="ci-n">'+esc(gold&&hide?'Рідкісний особливий предмет':it.n)+'</span></div>';
+}
+function caseHome(){
+  var grid='';
+  TIERS.slice().forEach(function(t){ ITEMS[t.k].forEach(function(it){ grid+=itemCard({t:t.k,e:it[0],n:it[1]},true,'small'); }); });
+  $('dc-body').innerHTML='<div class="case-hero"><div class="case-big">'+CASE_SVG+'</div>'+
+    '<div class="case-info"><p>У кейсі 60 предметів: від картоплі до надувної жінки. Шанси як у справжньому CS: золото випадає приблизно раз на 400 відкриттів.</p>'+
+    '<button type="button" class="btn primary case-go" id="dc-go">Відкрити кейс</button><p class="case-count">Ви відкрили кейсів: '+caseCount+'</p></div></div>'+
+    '<h3 class="case-h">Вміст кейсу</h3><div class="case-grid">'+grid+'</div>';
+  $('dc-go').onclick=openCase;
+}
+function openCase(){
+  if(caseSpinning) return;
+  caseSpinning=true;
+  var N=56, stop=48, win=drawItem(), cards='';
+  for(var i=0;i<N;i++) cards+=itemCard(i===stop?win:drawItem(),true,i===stop?'win':'');
+  $('dc-body').innerHTML='<div class="rl-win case-win" id="cs-win"><div class="rl-strip" id="cs-strip">'+cards+'</div><div class="rl-mark" aria-hidden="true"></div></div><div class="case-res" id="cs-res" aria-live="polite"></div>';
+  var strip=$('cs-strip'), box=$('cs-win'), STEP=166, CARD=156;
+  var jitter=rnd(Math.floor(CARD*0.8))-Math.floor(CARD*0.4);
+  var target=-(stop*STEP+CARD/2-box.clientWidth/2+jitter), dur=reduceMotion?600:6200;
+  strip.style.transform='translateX(0px)'; void strip.offsetWidth;
+  strip.style.transition='transform '+dur+'ms cubic-bezier(.08,.6,.12,1)';
+  strip.style.transform='translateX('+target+'px)';
+  var done=false;
+  function finish(){
+    if(done) return; done=true; caseSpinning=false;
+    caseCount++; try{ localStorage.setItem('cs2-cases',String(caseCount)); }catch(e){}
+    var tier=TIERBY[win.t], gold=win.t==='gold';
+    $('cs-res').innerHTML='<div class="drop t-'+win.t+'"><span class="drop-e">'+win.e+'</span><div><small>'+esc(tier.n)+'</small><strong>'+esc(win.n)+'</strong></div></div>'+
+      '<div class="drop-act">'+(gold?'<a class="btn primary gold-btn" id="dc-claim" href="'+RICKROLL+'" target="_blank" rel="noopener">★ Забрати приз</a>':'')+
+      '<button type="button" class="btn'+(gold?'':' primary')+'" id="dc-again">Відкрити ще раз</button><button type="button" class="btn ghost" id="dc-back">До вмісту кейсу</button></div>';
+    $('dc-again').onclick=openCase;
+    $('dc-back').onclick=caseHome;
+    if(gold) $('dc-claim').addEventListener('click',function(){ setTimeout(function(){ var c=$('dc-claim'); if(c) c.textContent='Вас зарікролили 🕺'; },400); });
+  }
+  strip.addEventListener('transitionend',finish,{once:true});
+  setTimeout(finish,dur+400);
+}
+$('case-fab').onclick=function(){ caseHome(); $('dc').showModal(); };
+$('dc-close').onclick=function(){ $('dc').close(); };
+$('dc').addEventListener('close',function(){ caseSpinning=false; });
+$('case-fab').innerHTML=CASE_SVG+'<span class="sr">Відкрити кейс</span>';
 
 /* ---------- background music ---------- */
 var MUSIC_KEY='cs2-music-off', VOLUME=0.15;
