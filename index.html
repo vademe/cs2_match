@@ -798,6 +798,20 @@ html{background:var(--page)}
 .bar .btn,.zoom button,.zoom output{padding-top:5px; padding-bottom:5px}
 @media (min-width:821px){ .case-fab{height:36px} .case-fab svg{width:30px} }
 @media (max-width:820px){ .hero-grid{padding:8px 16px 0} .bar{padding:6px 16px 8px} }
+
+/* ===================== round 12: big logo, header in one row (logo between hint and buttons) ===================== */
+.hero{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); padding:0; margin:0}
+.bar{display:flex; flex-wrap:nowrap; align-items:center; gap:18px; padding:8px 28px 8px}
+.bar-left{flex:1 1 0; min-width:0}
+.bar-right{flex:1 1 0; min-width:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:10px 12px}
+.bar-logo{--src:var(--img-logo); flex:none; width:clamp(220px,18vw,320px); aspect-ratio:960/445; background:#000}
+.champ-row{background:transparent; background-image:none; padding:16px 28px 0}
+@media (max-width:820px){
+  .bar{flex-wrap:wrap; gap:8px 12px; padding:8px 16px 10px}
+  .bar-logo{order:-1; width:200px; margin:0 auto}
+  .bar-left,.bar-right{flex:1 1 100%}
+  .bar-right{justify-content:flex-start}
+}
 </style>
 </head>
 <body>
@@ -915,10 +929,12 @@ root.innerHTML=
  '<div class="slogan" aria-label="1 на 1, без виправдань. ZGRA9 Cup 2026"><svg class="sl-emb" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="17" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="32" r="3.5" fill="currentColor"/><path d="M32 4v16M32 44v16M4 32h16M44 32h16" stroke="currentColor" stroke-width="3"/></svg>'+
  '<div class="sl-txt"><span class="sl-year">20<i></i>26</span><b>1 на 1.</b><b>Без виправдань.</b><span class="sl-box">ZGRA9 CUP</span></div></div>'+
  '</div></header>'+
- '<div class="champ-row" id="champ"></div>'+
  '<div class="bar"><div class="legend"><span><i style="background:var(--ct)"></i>Верхня сітка</span><span><i style="background:var(--t)"></i>Нижня сітка</span></div>'+
- '<span class="hint" id="hint"></span><span class="spacer"></span><span id="tools"></span><button type="button" class="case-fab" id="case-fab" title="Відкрити кейс"></button>'+
- '<div class="zoom" role="group" aria-label="Масштаб"><button type="button" id="zout" aria-label="Зменшити">−</button><output id="zval">100%</output><button type="button" id="zin" aria-label="Збільшити">+</button><button type="button" id="zfit">Уся сітка</button></div></div>'+
+ '<div class="bar-left"><span class="hint" id="hint"></span></div>'+
+ '<div class="bar-logo mask" role="img" aria-label="ZGRA9"></div>'+
+ '<div class="bar-right"><span id="tools"></span><button type="button" class="case-fab" id="case-fab" title="Відкрити кейс"></button>'+
+ '<div class="zoom" role="group" aria-label="Масштаб"><button type="button" id="zout" aria-label="Зменшити">−</button><output id="zval">100%</output><button type="button" id="zin" aria-label="Збільшити">+</button><button type="button" id="zfit">Уся сітка</button></div></div></div>'+
+ '<div class="champ-row" id="champ"></div>'+
  '<div class="layout"><aside class="roster" aria-labelledby="roster-h"><h2 class="roster-h" id="roster-h">Учасники</h2><div class="roster-list" id="roster"></div><p class="roster-hint" id="roster-hint">Оберіть гравця, щоб підсвітити його матчі.</p></aside>'+
  '<div class="stage" id="stage"><div class="sizer" id="sizer"><div class="canvas" id="canvas"></div></div></div></div>'+
  '<section class="summary" aria-labelledby="sum-h"><h2 id="sum-h">Підсумок</h2><p class="sub">Набрані бали рахуються з усіх матчів, де вказано рахунок.</p><div class="tbl-wrap" id="sum"></div></section>'+
