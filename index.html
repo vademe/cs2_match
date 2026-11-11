@@ -725,6 +725,16 @@ dialog::backdrop{background:rgba(255,255,255,.88)}
   .pl{flex:0 0 auto; min-width:150px}
   .layout .sizer{margin:0 16px}
 }
+
+/* ===================== round 4: logo-only header, dog nudged right ===================== */
+.hero-grid{justify-content:center; padding:18px 28px; min-height:0; gap:0}
+.brand::after{content:none}
+.hero .logo{width:clamp(220px,18vw,320px)}
+.hero-main{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; flex:none; min-width:0}
+.slogan{display:none}
+.dog-bg{-webkit-mask-position:64% center; mask-position:64% center}
+.rl.gf{background:transparent}
+.foot-mark .skull-big{--src:var(--img-dog2); width:40px; aspect-ratio:900/937}
 </style>
 </head>
 <body>
