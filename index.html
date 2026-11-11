@@ -735,6 +735,12 @@ dialog::backdrop{background:rgba(255,255,255,.88)}
 .dog-bg{-webkit-mask-position:64% center; mask-position:64% center}
 .rl.gf{background:transparent}
 .foot-mark .skull-big{--src:var(--img-dog2); width:40px; aspect-ratio:900/937}
+
+/* ===================== round 5: score cells always follow their row colour ===================== */
+.m .mh+.row .sc,.m .mh+.row.win .sc{background:transparent; color:#000; border-left-color:#000; box-shadow:none}
+.m .row+.row .sc,.m .row+.row.win .sc{background:transparent; color:#fff; border-left-color:#fff; box-shadow:none}
+.m .row.win .sc{font-weight:700}
+.m .row.lose .sc{font-weight:400}
 </style>
 </head>
 <body>
