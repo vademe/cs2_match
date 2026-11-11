@@ -547,6 +547,11 @@ dialog::backdrop{background:rgba(255,255,255,.9)}
   .case-fab{position:absolute; top:24px; right:36px; bottom:auto}
   .case-fab .tagline{top:auto; bottom:-16px; font-size:11px}
 }
+
+/* mascot next to the logo */
+.brand{display:flex; align-items:center; gap:4px; flex:none}
+.hdog{--src:var(--img-dog); height:clamp(96px,8.5vw,132px); aspect-ratio:560/535; flex:none; transform:rotate(-4deg)}
+@media (max-width:640px){ .hdog{height:76px} .brand .logo{width:160px} }
 </style>
 </head>
 <body>
@@ -657,7 +662,7 @@ var root=document.getElementById('root');
 root.innerHTML=
  '<section class="gate" id="gate"><div class="card" id="gate-card"><p>Завантажую сітку…</p></div></section>'+
  '<div id="main" hidden>'+
- '<header class="hero"><div class="hero-grid"><div class="logo mask" role="img" aria-label="ZGRA9"></div><div class="hero-main"><h1 id="title"></h1><p class="meta" id="meta"></p></div><div id="champ"></div></div></header>'+
+ '<header class="hero"><div class="hero-grid"><div class="brand"><div class="hdog mask" aria-hidden="true"></div><div class="logo mask" role="img" aria-label="ZGRA9"></div></div><div class="hero-main"><h1 id="title"></h1><p class="meta" id="meta"></p></div><div id="champ"></div></div></header>'+
  '<div class="bar"><div class="legend"><span><i style="background:var(--ct)"></i>Верхня сітка</span><span><i style="background:var(--t)"></i>Нижня сітка</span></div>'+
  '<span class="hint" id="hint"></span><span class="spacer"></span><span id="tools"></span>'+
  '<div class="zoom" role="group" aria-label="Масштаб"><button type="button" id="zout" aria-label="Зменшити">−</button><output id="zval">100%</output><button type="button" id="zin" aria-label="Збільшити">+</button><button type="button" id="zfit">Уся сітка</button></div></div>'+
@@ -728,8 +733,7 @@ function render(){
     });
   });
   var html='<svg width="'+CANVAS_W+'" height="'+CANVAS_H+'" aria-hidden="true">'+paths+'</svg>';
-  var dogH=Math.min(560,BYID.GF.y-60), dogW=Math.round(dogH*560/535);
-  html+='<div class="dog" style="left:'+(CANVAS_W-dogW)+'px;top:6px;width:'+dogW+'px;height:'+dogH+'px" aria-hidden="true"><div class="dog-img mask"></div><span class="dog-tag">ZGRA9 // MASCOT</span></div>'+(HOLES_HTML||'');
+  html+=(HOLES_HTML||'');
   LABELS.forEach(function(l){ html+='<div class="'+l.cls+'" style="left:'+l.x+'px;top:'+l.y+'px">'+esc(l.t)+'</div>'; });
 
   MATCHES.forEach(function(m){
